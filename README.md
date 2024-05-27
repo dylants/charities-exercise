@@ -46,7 +46,11 @@ $ npm run dev
 $ npm run build
 ```
 
-## Tests
+## Configuration
+
+The min/max values which are used in computing the number of charities selected are all stored in the [constants.ts](src/constants.ts) file.
+
+## Lint
 
 ESLint is configured to lint the project files. To lint the project:
 

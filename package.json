@@ -11,13 +11,14 @@
     "check-types": "tsc --noemit",
     "command-line": "ts-node src/index.ts",
     "start": "ts-node src/index.ts data/charities.csv data/example-profile.csv",
-    "dev": "nodemon src/index.ts data/charities.csv data/example-profile.csv",
+    "dev": "ENABLE_LOGGING=true nodemon src/index.ts data/charities.csv data/example-profile.csv",
     "eslint": "eslint .",
     "lint": "npm run eslint && npm run check-types"
   },
   "dependencies": {
     "csv": "6.3.9",
-    "lodash": "4.17.21"
+    "lodash": "4.17.21",
+    "pino": "9.1.0"
   },
   "devDependencies": {
     "@tsconfig/node20": "20.1.4",

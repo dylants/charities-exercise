@@ -52,8 +52,26 @@ The min/max values which are used in computing the number of charities selected 
 
 ## Lint
 
-ESLint is configured to lint the project files. To lint the project:
+ESLint is configured to lint the project files.
+
+To lint the project:
 
 ```
 $ npm run lint
+```
+
+## Tests
+
+Jest is used for unit tests.
+
+To run the tests:
+
+```
+$ npm test
+```
+
+To run the tests in watch mode:
+
+```
+$ npm run test:watch
 ```

@@ -4,14 +4,19 @@ import Charity from '../types/Charity';
 import logger from './logger';
 import { N_MIN_ANIMAL_RELATED } from '../constants';
 
-function pluckCategoryMatch({
+export function pluckCategoryMatch({
   category,
   charities,
 }: {
   category: CategoryMatch['category'];
   charities: Array<Charity>;
-}): Charity {
+}): Charity | undefined {
   const index = charities.findIndex((charity) => charity.category === category);
+
+  if (index === -1) {
+    return undefined;
+  }
+
   return charities.splice(index, 1)[0];
 }
 
@@ -25,9 +30,17 @@ export function addCategoryMatches({
   return categoryMatches
     .map((categoryMatch) => {
       const { category, numToFind } = categoryMatch;
-      return _.times(numToFind, () =>
+      logger.trace('category: %s', category);
+      logger.trace('numToFind: %d', numToFind);
+
+      const charitiesFound = _.times(numToFind, () =>
         pluckCategoryMatch({ category, charities }),
-      ).flat();
+      )
+        .flat()
+        // remove any undefined and make TypeScript happy
+        .filter((c) => c !== undefined) as Array<Charity>;
+      logger.trace('charitiesFound: %j', charitiesFound);
+      return charitiesFound;
     })
     .flat();
 }
@@ -47,12 +60,12 @@ export function buildAnimalRelatedCategoryMatches({
     N_MIN_ANIMAL_RELATED >= numStateCharities
       ? _.random(0, numStateCharities)
       : _.random(N_MIN_ANIMAL_RELATED, numStateCharities);
+  logger.trace('numStateCategoryMatches: %d', numStateCategoryMatches);
 
   const numNationalCategoryMatches =
     numStateCategoryMatches >= N_MIN_ANIMAL_RELATED
       ? 0
       : N_MIN_ANIMAL_RELATED - numStateCategoryMatches;
-  logger.trace('numStateCategoryMatches: %d', numStateCategoryMatches);
   logger.trace('numNationalCategoryMatches: %d', numNationalCategoryMatches);
 
   const stateCategoryMatch: CategoryMatch = {

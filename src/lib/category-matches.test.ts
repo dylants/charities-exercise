@@ -1,6 +1,11 @@
+import { N_TOTAL } from '../constants';
 import CategoryMatch from '../types/CategoryMatch';
 import Charity from '../types/Charity';
-import { addCategoryMatches, pluckCategoryMatch } from './category-matches';
+import {
+  addCategoryMatches,
+  buildAnimalRelatedCategoryMatches,
+  pluckCategoryMatch,
+} from './category-matches';
 
 describe('category-matches', () => {
   let charities: Array<Charity>;
@@ -97,6 +102,87 @@ describe('category-matches', () => {
           charities,
         }).length,
       ).toEqual(0);
+    });
+  });
+
+  describe('buildAnimalRelatedCategoryMatches', () => {
+    let numStateCharities: number, numNationalCharities: number;
+
+    describe('when num state = 0 (num national = 12)', () => {
+      beforeEach(() => {
+        numStateCharities = 0;
+        numNationalCharities = N_TOTAL - 0;
+      });
+
+      it('should generate valid state and national matches', () => {
+        const { nationalCategoryMatch, stateCategoryMatch } =
+          buildAnimalRelatedCategoryMatches({
+            numNationalCharities,
+            numStateCharities,
+          });
+
+        expect(stateCategoryMatch.category).toEqual('ANIMAL_RELATED');
+        expect(nationalCategoryMatch.category).toEqual('ANIMAL_RELATED');
+
+        expect(stateCategoryMatch.numToFind).toEqual(0);
+
+        expect(nationalCategoryMatch.numToFind).toBeGreaterThanOrEqual(0);
+        expect(nationalCategoryMatch.numToFind).toBeLessThanOrEqual(
+          numNationalCharities,
+        );
+      });
+    });
+
+    describe('when num state = 2 (num national = 10)', () => {
+      beforeEach(() => {
+        numStateCharities = 2;
+        numNationalCharities = N_TOTAL - 2;
+      });
+
+      it('should generate valid state and national matches', () => {
+        const { nationalCategoryMatch, stateCategoryMatch } =
+          buildAnimalRelatedCategoryMatches({
+            numNationalCharities,
+            numStateCharities,
+          });
+
+        expect(stateCategoryMatch.category).toEqual('ANIMAL_RELATED');
+        expect(nationalCategoryMatch.category).toEqual('ANIMAL_RELATED');
+
+        expect(stateCategoryMatch.numToFind).toBeGreaterThanOrEqual(0);
+        expect(stateCategoryMatch.numToFind).toBeLessThanOrEqual(2);
+
+        expect(nationalCategoryMatch.numToFind).toBeGreaterThanOrEqual(0);
+        expect(nationalCategoryMatch.numToFind).toBeLessThanOrEqual(
+          numNationalCharities,
+        );
+      });
+    });
+
+    describe('when num state = 5 (num national = 7)', () => {
+      beforeEach(() => {
+        numStateCharities = 5;
+        numNationalCharities = N_TOTAL - 5;
+      });
+
+      it('should generate valid state and national matches', () => {
+        const { nationalCategoryMatch, stateCategoryMatch } =
+          buildAnimalRelatedCategoryMatches({
+            numNationalCharities,
+            numStateCharities,
+          });
+
+        expect(stateCategoryMatch.category).toEqual('ANIMAL_RELATED');
+        expect(nationalCategoryMatch.category).toEqual('ANIMAL_RELATED');
+
+        expect(stateCategoryMatch.numToFind).toBeGreaterThanOrEqual(0);
+        expect(stateCategoryMatch.numToFind).toBeLessThanOrEqual(5);
+
+        expect(nationalCategoryMatch.numToFind).toBeGreaterThanOrEqual(0);
+        expect(nationalCategoryMatch.numToFind).toBeLessThanOrEqual(
+          numNationalCharities,
+        );
+      });
     });
   });
 });

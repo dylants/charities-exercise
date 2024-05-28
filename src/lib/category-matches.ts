@@ -2,7 +2,7 @@ import _ from 'lodash';
 import CategoryMatch from '../types/CategoryMatch';
 import Charity from '../types/Charity';
 import logger from './logger';
-import { N_MIN_ANIMAL_RELATED } from '../constants';
+import { N_MIN_ANIMAL_RELATED, N_TOTAL } from '../constants';
 
 export function pluckCategoryMatch({
   category,
@@ -50,22 +50,45 @@ type BuildCategoryMatchesResult = {
   stateCategoryMatch: CategoryMatch;
 };
 export function buildAnimalRelatedCategoryMatches({
+  numNationalCharities,
   numStateCharities,
 }: {
+  numNationalCharities: number;
   numStateCharities: number;
 }): BuildCategoryMatchesResult {
   logger.trace('N_MIN_ANIMAL_RELATED: %d', N_MIN_ANIMAL_RELATED);
+  logger.trace('numStateCharities: %d', numStateCharities);
+  logger.trace('numNationalCharities: %d', numNationalCharities);
+
+  // There should be _at least_ N_MIN_ANIMAL_RELATED, but no more than
+  // the N_TOTAL number of charities.
+  const numAnimalRelatedCharities = _.random(N_MIN_ANIMAL_RELATED, N_TOTAL);
+  logger.trace('numAnimalRelatedCharities: %d', numAnimalRelatedCharities);
+
+  // do not exceed the required matches, or number of state charities
+  const maxStateMatches = Math.min(
+    numAnimalRelatedCharities,
+    numStateCharities,
+  );
 
   const numStateCategoryMatches =
-    N_MIN_ANIMAL_RELATED >= numStateCharities
-      ? _.random(0, numStateCharities)
-      : _.random(N_MIN_ANIMAL_RELATED, numStateCharities);
+    numAnimalRelatedCharities > numNationalCharities
+      ? // if we need more than we have slots in national charities,
+        // this number must be _at least_ the difference
+        _.random(
+          numAnimalRelatedCharities - numNationalCharities,
+          maxStateMatches,
+        )
+      : // else the number can be 0 to the max
+        _.random(0, maxStateMatches);
   logger.trace('numStateCategoryMatches: %d', numStateCategoryMatches);
 
   const numNationalCategoryMatches =
-    numStateCategoryMatches >= N_MIN_ANIMAL_RELATED
-      ? 0
-      : N_MIN_ANIMAL_RELATED - numStateCategoryMatches;
+    numStateCategoryMatches === numAnimalRelatedCharities
+      ? // when all matches are in state, none are needed in national
+        0
+      : // else we need the rest in national
+        numAnimalRelatedCharities - numStateCategoryMatches;
   logger.trace('numNationalCategoryMatches: %d', numNationalCategoryMatches);
 
   const stateCategoryMatch: CategoryMatch = {

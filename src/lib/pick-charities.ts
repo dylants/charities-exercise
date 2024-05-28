@@ -113,7 +113,10 @@ export default function pickCharities(
   const nationalCategoryMatches: Array<CategoryMatch> = [];
   if (hasPets) {
     const { nationalCategoryMatch, stateCategoryMatch } =
-      buildAnimalRelatedCategoryMatches({ numStateCharities });
+      buildAnimalRelatedCategoryMatches({
+        numNationalCharities,
+        numStateCharities,
+      });
 
     stateCategoryMatches.push(stateCategoryMatch);
     nationalCategoryMatches.push(nationalCategoryMatch);
